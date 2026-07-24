@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Área dos Noivos - Márcio & Elisângela</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-wrapper { max-width: 900px; margin: 60px auto; padding: 0 20px; }
+    .admin-card {
+      background: var(--bg-card); border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg); padding: 30px; margin-bottom: 30px;
+      backdrop-filter: blur(8px);
+    }
+    .admin-login-box { max-width: 420px; margin: 100px auto; text-align: center; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .admin-table th, .admin-table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border-gold); vertical-align: top; }
+    .admin-table th { color: var(--gold-primary); font-weight: 600; }
+    .admin-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
+    .admin-summary { background: var(--gold-light); padding: 12px; border-radius: var(--radius-md); margin-bottom: 15px; font-size: 0.9rem; color: var(--gold-primary); }
+    .admin-table-wrapper { overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+  <div id="admin-login" class="admin-login-box">
+    <h1 class="font-serif" style="font-size: 1.8rem; margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> Área dos Noivos</h1>
+    <p style="color: var(--text-muted); margin-bottom: 20px;">Digite a senha para ver convidados, recados e presentes.</p>
+    <input type="password" id="admin-password" class="form-control" placeholder="Senha" style="margin-bottom: 15px; text-align: center;">
+    <button class="btn-primary" id="btn-admin-login" style="width: 100%;">
+      <i class="fa-solid fa-right-to-bracket"></i> Entrar
+    </button>
+    <p id="admin-login-error" style="color: var(--rose-accent); margin-top: 12px; display: none;">Senha incorreta.</p>
+  </div>
+
+  <div id="admin-content" class="admin-wrapper" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 10px;">
+      <h1 class="font-serif" style="font-size: 1.8rem;">Área dos Noivos</h1>
+      <button class="btn-theme" id="theme-toggle" title="Alternar Modo Escuro / Claro">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+
+    <div class="admin-card">
+      <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-users"></i> Lista de Convidados</h2>
+      <div id="admin-rsvp-list"><p style="color: var(--text-muted);">Carregando...</p></div>
+    </div>
+
+    <div class="admin-card">
+      <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-gift"></i> Quem Presenteou</h2>
+      <div id="admin-gifts-list"><p style="color: var(--text-muted);">Carregando...</p></div>
+    </div>
+
+    <div class="admin-card">
+      <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-comment-dots"></i> Mural de Recados</h2>
+      <div id="admin-messages-list"><p style="color: var(--text-muted);">Carregando...</p></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check" style="font-size: 1.4rem;"></i>
+    <span id="toast-message">Notificação enviada!</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

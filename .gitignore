@@ -1,0 +1,13 @@
+# Vercel
+.vercel
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Dependências (caso algum dia adicione um package.json)
+node_modules
+
+# Scripts locais (só usados pra testar no seu computador)
+iniciar_site.bat
+iniciar_site.ps1

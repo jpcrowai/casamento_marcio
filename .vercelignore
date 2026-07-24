@@ -1,0 +1,9 @@
+# Código das Edge Functions (roda no Supabase, não faz parte do site estático)
+supabase
+
+# Scripts SQL (rodados manualmente no Supabase SQL Editor, não fazem parte do site)
+*.sql
+
+# Scripts locais de desenvolvimento
+iniciar_site.bat
+iniciar_site.ps1
