@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 6. PIX & Gifts (contribuições reais via PagBank)
   // ---------------------------------------------------------------
   const btnCopyMainPix  = document.getElementById('btn-copy-main-pix');
-  const pixKeyText = 'marcioeelisangela2026@pix.com.br';
+  const pixKeyText = '8b1dea47-3989-425b-aae5-cd611e884b49';
 
   function copyPixKey() {
     navigator.clipboard.writeText(pixKeyText)
