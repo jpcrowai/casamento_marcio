@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ---------------------------------------------------------------
   // 3. Countdown Timer
   // ---------------------------------------------------------------
-  const weddingDate = new Date('2026-10-31T15:00:00').getTime();
+  const weddingDate = new Date('2026-10-31T16:30:00').getTime();
 
   function updateCountdown() {
     const distance = weddingDate - Date.now();

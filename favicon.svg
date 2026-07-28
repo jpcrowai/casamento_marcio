@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2C2623"/>
+      <stop offset="100%" stop-color="#17130F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3D28A"/>
+      <stop offset="45%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#9C6F2B"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="32" cy="32" r="31" fill="url(#bg)"/>
+  <circle cx="32" cy="32" r="30" fill="none" stroke="url(#gold)" stroke-width="1.4"/>
+
+  <text x="24" y="41" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-size="30" font-weight="700" fill="url(#gold)">M</text>
+  <text x="41" y="41" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-size="30" font-weight="700" fill="url(#gold)">E</text>
+
+  <line x1="20" y1="47" x2="44" y2="47" stroke="url(#gold)" stroke-width="1.2"/>
+  <circle cx="32" cy="47" r="1.6" fill="#17130F"/>
+  <path d="M 32 45.6 C 30.8 44.3 29 44.7 29 46.2 C 29 47.4 32 49 32 49 C 32 49 35 47.4 35 46.2 C 35 44.7 33.2 44.3 32 45.6 Z"
+        fill="url(#gold)"/>
+</svg>

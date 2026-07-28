@@ -76,6 +76,7 @@ const GIFT_PRICES_CENTS: Record<string, number> = {
   "Passeio Turístico": 40000,
   "Day Spa a Dois": 35000,
   "Seguro Viagem": 20000,
+  "Teste de Pagamento": 100, // ATENÇÃO: item temporário só pra validar produção - remover depois (e tirar o card correspondente do index.html)
 };
 
 function jsonResponse(body: unknown, status = 200) {

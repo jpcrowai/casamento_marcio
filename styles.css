@@ -389,97 +389,6 @@ h1, h2, h3, h4, .font-serif {
   font-size: 1.2rem;
 }
 
-/* Story Section */
-.story-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  align-items: center;
-}
-
-.story-img-wrapper {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-gold);
-}
-
-.story-img-wrapper img {
-  width: 100%;
-  height: 480px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.6s ease;
-}
-
-.story-img-wrapper:hover img {
-  transform: scale(1.04);
-}
-
-.story-card-overlay {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  padding: 20px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius-md);
-}
-
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  position: relative;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 10px;
-  bottom: 10px;
-  width: 2px;
-  background: var(--border-gold);
-}
-
-.timeline-item {
-  position: relative;
-  padding-left: 55px;
-}
-
-.timeline-dot {
-  position: absolute;
-  left: 11px;
-  top: 5px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--gold-gradient);
-  border: 4px solid var(--bg-primary);
-  box-shadow: 0 0 10px rgba(197, 160, 89, 0.4);
-}
-
-.timeline-date {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--gold-primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.timeline-title {
-  font-size: 1.4rem;
-  margin: 4px 0 8px;
-}
-
-.timeline-desc {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
 /* Event Details & Cards */
 .event-grid {
   display: grid;
@@ -640,6 +549,12 @@ h1, h2, h3, h4, .font-serif {
 .gift-title {
   font-size: 1.25rem;
   margin-bottom: 8px;
+}
+
+.gift-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .gift-price {
@@ -840,7 +755,7 @@ footer {
 
 /* Responsive Rules */
 @media (max-width: 900px) {
-  .story-grid, .guestbook-grid {
+  .guestbook-grid {
     grid-template-columns: 1fr;
   }
   .hero-title {
@@ -866,5 +781,118 @@ footer {
   }
   .nav-links.active {
     display: flex;
+  }
+  /* O CTA "Confirmar Presença" da navbar some no mobile - já tem o mesmo
+     link no menu hambúrguer e um botão bem maior logo no hero, então é
+     redundante e é o que mais espremia a navbar em telas estreitas. */
+  #nav-rsvp-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 14px 4%;
+  }
+  .nav-brand {
+    font-size: 1.05rem;
+  }
+  .section {
+    padding: 70px 5%;
+  }
+  .section-title {
+    font-size: 2.1rem;
+  }
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  .hero-subtitle {
+    font-size: 1.15rem;
+  }
+  .hero-date {
+    font-size: 0.85rem;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hero-date::before, .hero-date::after {
+    display: none;
+  }
+  .hero-date span:nth-child(2) {
+    display: none;
+  }
+  .countdown-container {
+    gap: 10px;
+  }
+  .countdown-box {
+    min-width: 0;
+    flex: 1 1 calc(50% - 10px);
+    padding: 14px 10px;
+  }
+  .countdown-number {
+    font-size: 2rem;
+  }
+  .rsvp-wrapper {
+    padding: 30px 20px;
+  }
+  .event-card {
+    padding: 30px 20px;
+  }
+  .pix-modal-box {
+    padding: 24px 18px;
+  }
+  .qr-code-img {
+    width: 160px;
+    height: 160px;
+  }
+  /* Os minmax(Npx, 1fr) desses grids assumem espaço que não existe em
+     telas bem estreitas (a coluna forçada fica maior que a área útil da
+     seção e estica a largura efetiva da página inteira). Força 1 coluna
+     de verdade aqui. */
+  .event-grid, .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+  /* Campos abaixo de 16px fazem o Safari do iPhone dar zoom automático
+     ao focar o input - 16px evita esse comportamento. */
+  .form-control {
+    font-size: 16px;
+  }
+
+  /* Lista de presentes: 37 cards em 1 coluna deixava o site enorme pra
+     rolar no celular. 2 colunas + cards bem mais compactos (ícone menor,
+     sem a descrição, menos espaçamento) reduz muito a altura total. */
+  .gifts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .gift-card {
+    padding: 16px 12px;
+    min-width: 0; /* sem isso, um card com texto/botão mais largo empurra a coluna 1fr além da tela */
+  }
+  .gift-title, .gift-card .btn-gift-pix {
+    overflow-wrap: break-word;
+  }
+  .gift-emoji {
+    font-size: 1.7rem;
+    margin-bottom: 6px;
+  }
+  .gift-title {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .gift-desc {
+    display: none;
+  }
+  .gift-price {
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+  }
+  .gift-count {
+    font-size: 0.68rem !important;
+    margin-top: 4px !important;
+  }
+  .gift-card .btn-gift-pix {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    gap: 4px;
   }
 }

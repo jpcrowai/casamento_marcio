@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list.length) {
       html += '<p style="color:var(--text-muted);">Nenhuma contribuição ainda.</p>';
     } else {
+      html += '<p class="scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Arraste a tabela pro lado pra ver mais colunas</p>';
       html += '<div class="admin-table-wrapper"><table class="admin-table"><thead><tr><th>Nome</th><th>Presente</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead><tbody>';
       list.forEach(item => {
         const badge = PAYMENT_BADGES[item.payment_status];
