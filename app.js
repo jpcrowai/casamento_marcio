@@ -53,7 +53,21 @@ async function saveMessage(data) {
 async function createPixCharge(payload) {
   if (!supabaseClient) throw new Error('Pagamento indisponível no momento (Supabase não conectado).');
   const { data, error } = await supabaseClient.functions.invoke('create-pix-charge', { body: payload });
-  if (error) throw error;
+  if (error) {
+    // Quando a function responde com status de erro (400/500), o supabase-js
+    // joga um FunctionsHttpError genérico em "error" e NÃO lê o corpo JSON
+    // automaticamente - o motivo real (nossa mensagem de erro) fica em
+    // error.context (a Response crua). Sem isso, o usuário só via "Edge
+    // Function returned a non-2xx status code", sem nenhuma pista do motivo.
+    let detail = error.message;
+    try {
+      if (error.context && typeof error.context.json === 'function') {
+        const body = await error.context.json();
+        if (body && body.error) detail = body.error;
+      }
+    } catch (_) { /* mantém a mensagem genérica se não der pra ler o corpo */ }
+    throw new Error(detail);
+  }
   if (data && data.error) throw new Error(data.error);
   return data;
 }
