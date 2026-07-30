@@ -48,11 +48,11 @@ async function saveMessage(data) {
 }
 
 // ================================================================
-// Helpers: Pagamentos PIX (PagBank) via Supabase Edge Functions
+// Helpers: Pagamentos (Checkout Mercado Pago) via Supabase Edge Functions
 // ================================================================
-async function createPixCharge(payload) {
+async function createCheckout(payload) {
   if (!supabaseClient) throw new Error('Pagamento indisponível no momento (Supabase não conectado).');
-  const { data, error } = await supabaseClient.functions.invoke('create-pix-charge', { body: payload });
+  const { data, error } = await supabaseClient.functions.invoke('create-mp-checkout', { body: payload });
   if (error) {
     // Quando a function responde com status de erro (400/500), o supabase-js
     // joga um FunctionsHttpError genérico em "error" e NÃO lê o corpo JSON
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           first_name: el.value.trim(),
           last_name: lastNames[i].value.trim(),
         }));
-        const result = await createPixCharge({ kind: 'rsvp', name, email, phone, cpf, guests, diet, song, companions });
+        const result = await createCheckout({ kind: 'rsvp', name, email, phone, cpf, guests, diet, song, companions });
         openRsvpPaymentModal(result);
       }
     } catch (err) {
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // ---------------------------------------------------------------
-  // 6. PIX & Gifts (contribuições reais via PagBank)
+  // 6. PIX & Gifts (contribuições reais via Checkout Mercado Pago)
   // ---------------------------------------------------------------
   const btnCopyMainPix  = document.getElementById('btn-copy-main-pix');
   const pixKeyText = '8b1dea47-3989-425b-aae5-cd611e884b49';
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnGiftGeneratePix.disabled = true;
     btnGiftGeneratePix.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando checkout...';
     try {
-      const result = await createPixCharge({ kind: 'gift', giftKey: currentGiftKey, donorName, donorCpf });
+      const result = await createCheckout({ kind: 'gift', giftKey: currentGiftKey, donorName, donorCpf });
       giftCheckoutLink.href = result.checkoutUrl;
       giftPaymentStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Aguardando pagamento...';
       giftDonorForm.style.display = 'none';

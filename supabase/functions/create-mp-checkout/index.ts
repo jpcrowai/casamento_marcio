@@ -1,31 +1,22 @@
 // ================================================================
-// Casamento Márcio & Elisângela - Edge Function: create-pix-charge
-// Cria um Checkout do PagBank (o convidado escolhe PIX, cartão ou
-// boleto na própria página do PagBank) para RSVP (kind='rsvp') ou
-// contribuição de presente (kind='gift'). Cole este arquivo no
-// Dashboard do Supabase em Edge Functions > New Function.
+// Casamento Márcio & Elisângela - Edge Function: create-mp-checkout
+// Cria uma Preferência de Checkout do Mercado Pago (o convidado escolhe
+// PIX, cartão ou boleto na própria página do Mercado Pago) para RSVP
+// (kind='rsvp') ou contribuição de presente (kind='gift'). Cole este
+// arquivo no Dashboard do Supabase em Edge Functions > New Function.
 // Manter "Verify JWT" LIGADO (comportamento padrão) - é chamada pelo
 // anon key do navegador.
 // ================================================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const PAGBANK_API_BASE = Deno.env.get("PAGBANK_API_BASE") ?? "https://sandbox.api.pagseguro.com";
-const PAGBANK_TOKEN = Deno.env.get("PAGBANK_TOKEN") ?? "";
-const PAGBANK_MOCK = Deno.env.get("PAGBANK_MOCK") === "true";
+const MP_ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-// URL pública do site (pra onde o PagBank manda o convidado de volta depois
-// de pagar). Configure o secret PAGBANK_REDIRECT_URL com o domínio real do
-// site assim que ele estiver publicado - até lá, usamos a URL do próprio
+// URL pública do site (pra onde o Mercado Pago manda o convidado de volta
+// depois de pagar). Configure o secret SITE_REDIRECT_URL com o domínio real
+// do site assim que ele estiver publicado - até lá, usamos a URL do próprio
 // projeto Supabase como fallback só pra não travar a criação do checkout.
-const PAGBANK_REDIRECT_URL = Deno.env.get("PAGBANK_REDIRECT_URL") ?? SUPABASE_URL;
-// Segredo nosso (não do PagBank) embutido no CAMINHO da URL do webhook
-// (não como ?query= - o campo notification_urls do PagBank rejeitou query
-// string e URL longa demais). Criado porque o header x-authenticity-token do
-// PagBank confirmadamente não chega no sandbox (bug conhecido deles) - em
-// vez de depender da assinatura deles, validamos que quem chamou o webhook
-// conhece esse segredo.
-const WEBHOOK_SECRET = Deno.env.get("PAGBANK_WEBHOOK_SECRET") ?? "";
+const SITE_REDIRECT_URL = Deno.env.get("SITE_REDIRECT_URL") ?? SUPABASE_URL;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*", // restrinja ao domínio do site em produção
@@ -76,7 +67,7 @@ const GIFT_PRICES_CENTS: Record<string, number> = {
   "Passeio Turístico": 40000,
   "Day Spa a Dois": 35000,
   "Seguro Viagem": 20000,
-  "Teste de Pagamento": 100, // ATENÇÃO: item temporário só pra validar produção - remover depois (e tirar o card correspondente do index.html)
+  "Teste de Pagamento": 100, // item temporário pra validar produção - remover depois (e tirar o card do index.html)
 };
 
 function jsonResponse(body: unknown, status = 200) {
@@ -86,7 +77,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-async function createPagBankCheckout(opts: {
+async function createMercadoPagoPreference(opts: {
   referenceId: string;
   amountCents: number;
   customerName: string;
@@ -94,37 +85,38 @@ async function createPagBankCheckout(opts: {
   customerTaxId?: string;
   itemName: string;
 }) {
-  const webhookUrl = `${SUPABASE_URL}/functions/v1/pagbank-webhook/${WEBHOOK_SECRET}`;
+  const webhookUrl = `${SUPABASE_URL}/functions/v1/mp-webhook`;
+  const amount = opts.amountCents / 100;
 
-  // ATENÇÃO: confirmar contra o sandbox real assim que possível -
-  // endpoint (/checkouts), formato de payment_methods aceito, obrigatoriedade
-  // de customer.tax_id / items[].reference_id, e o "rel" exato do link de
-  // pagamento na resposta (aqui assumimos "PAY", com fallback pro primeiro
-  // link retornado). Docs: developer.pagbank.com.br - "Checkout".
+  // Docs: mercadopago.com.br/developers - "Checkout Pro > Criar preferência".
   const payload = {
-    reference_id: opts.referenceId,
-    customer: {
-      name: opts.customerName,
-      email: opts.customerEmail,
-      tax_id: opts.customerTaxId,
-    },
     items: [
-      { reference_id: opts.referenceId, name: opts.itemName, quantity: 1, unit_amount: opts.amountCents },
+      {
+        id: opts.referenceId,
+        title: opts.itemName,
+        quantity: 1,
+        unit_price: amount,
+        currency_id: "BRL",
+      },
     ],
-    // Deixa o convidado escolher a forma de pagamento na página do PagBank
-    payment_methods: [
-      { type: "PIX" },
-      { type: "CREDIT_CARD" },
-      { type: "BOLETO" },
-    ],
-    redirect_url: PAGBANK_REDIRECT_URL,
-    notification_urls: [webhookUrl],
+    payer: {
+      name: opts.customerName,
+      email: opts.customerEmail || undefined,
+      identification: opts.customerTaxId ? { type: "CPF", number: opts.customerTaxId } : undefined,
+    },
+    external_reference: opts.referenceId,
+    notification_url: webhookUrl,
+    back_urls: {
+      success: SITE_REDIRECT_URL,
+      pending: SITE_REDIRECT_URL,
+      failure: SITE_REDIRECT_URL,
+    },
   };
 
-  const resp = await fetch(`${PAGBANK_API_BASE}/checkouts`, {
+  const resp = await fetch("https://api.mercadopago.com/checkout/preferences", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${PAGBANK_TOKEN}`,
+      "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
@@ -132,16 +124,18 @@ async function createPagBankCheckout(opts: {
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`Erro ao criar checkout no PagBank: ${errText}`);
+    throw new Error(`Erro ao criar checkout no Mercado Pago: ${errText}`);
   }
 
-  const checkout = await resp.json();
-  const links = Array.isArray(checkout.links) ? checkout.links : [];
-  const payLink = links.find((l: any) => l.rel === "PAY" || l.rel === "pay" || l.rel === "checkout")?.href
-    ?? links[0]?.href;
-  if (!payLink) throw new Error("PagBank não retornou o link de pagamento (links[].href).");
+  const preference = await resp.json();
+  // Com token de teste (TEST-...) o link certo pra testar é sandbox_init_point;
+  // com token de produção (APP_USR-...) é init_point.
+  const checkoutUrl = MP_ACCESS_TOKEN.startsWith("TEST-")
+    ? (preference.sandbox_init_point ?? preference.init_point)
+    : (preference.init_point ?? preference.sandbox_init_point);
+  if (!checkoutUrl) throw new Error("Mercado Pago não retornou o link de checkout (init_point).");
 
-  return { checkoutId: checkout.id as string, checkoutUrl: payLink as string };
+  return { preferenceId: preference.id as string, checkoutUrl: checkoutUrl as string };
 }
 
 Deno.serve(async (req) => {
@@ -192,14 +186,8 @@ Deno.serve(async (req) => {
       if (insertErr) throw insertErr;
       const rsvpId = inserted.id;
 
-      if (PAGBANK_MOCK) {
-        const fakeUrl = `https://sandbox.pagseguro.uol.com.br/checkout/mock?ref=rsvp-${rsvpId}`;
-        await supabaseAdmin.from("rsvps").update({ pagbank_order_id: `MOCK_${rsvpId}`, checkout_url: fakeUrl }).eq("id", rsvpId);
-        return jsonResponse({ id: rsvpId, kind: "rsvp", amount: amountCents / 100, checkoutUrl: fakeUrl });
-      }
-
       try {
-        const checkout = await createPagBankCheckout({
+        const checkout = await createMercadoPagoPreference({
           referenceId: rsvpId,
           amountCents,
           customerName: name,
@@ -207,11 +195,11 @@ Deno.serve(async (req) => {
           customerTaxId: cpf,
           itemName: "Reserva de presença - Casamento Márcio & Elisângela",
         });
-        await supabaseAdmin.from("rsvps").update({ pagbank_order_id: checkout.checkoutId, checkout_url: checkout.checkoutUrl }).eq("id", rsvpId);
+        await supabaseAdmin.from("rsvps").update({ pagbank_order_id: checkout.preferenceId, checkout_url: checkout.checkoutUrl }).eq("id", rsvpId);
         return jsonResponse({ id: rsvpId, kind: "rsvp", amount: amountCents / 100, checkoutUrl: checkout.checkoutUrl });
-      } catch (pagbankErr) {
+      } catch (mpErr) {
         await supabaseAdmin.from("rsvps").update({ payment_status: "failed" }).eq("id", rsvpId);
-        throw pagbankErr;
+        throw mpErr;
       }
     }
 
@@ -236,25 +224,19 @@ Deno.serve(async (req) => {
       if (insertErr) throw insertErr;
       const paymentId = inserted.id;
 
-      if (PAGBANK_MOCK) {
-        const fakeUrl = `https://sandbox.pagseguro.uol.com.br/checkout/mock?ref=gift-${paymentId}`;
-        await supabaseAdmin.from("gift_payments").update({ pagbank_order_id: `MOCK_${paymentId}`, checkout_url: fakeUrl }).eq("id", paymentId);
-        return jsonResponse({ id: paymentId, kind: "gift", amount: amountCents / 100, checkoutUrl: fakeUrl });
-      }
-
       try {
-        const checkout = await createPagBankCheckout({
+        const checkout = await createMercadoPagoPreference({
           referenceId: paymentId,
           amountCents,
           customerName: donorName,
           customerTaxId: donorCpf,
           itemName: `Presente: ${giftKey}`,
         });
-        await supabaseAdmin.from("gift_payments").update({ pagbank_order_id: checkout.checkoutId, checkout_url: checkout.checkoutUrl }).eq("id", paymentId);
+        await supabaseAdmin.from("gift_payments").update({ pagbank_order_id: checkout.preferenceId, checkout_url: checkout.checkoutUrl }).eq("id", paymentId);
         return jsonResponse({ id: paymentId, kind: "gift", amount: amountCents / 100, checkoutUrl: checkout.checkoutUrl });
-      } catch (pagbankErr) {
+      } catch (mpErr) {
         await supabaseAdmin.from("gift_payments").update({ payment_status: "failed" }).eq("id", paymentId);
-        throw pagbankErr;
+        throw mpErr;
       }
     }
 
