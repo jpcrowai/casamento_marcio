@@ -1,5 +1,5 @@
 // ================================================================
-// Casamento Márcio & Elisângela - Edge Function: mp-webhook
+// Casamento Elisângela & Márcio - Edge Function: mp-webhook
 // Recebe a notificação do Mercado Pago quando um pagamento muda de
 // status e atualiza a linha correspondente em rsvps ou gift_payments.
 // Cole este arquivo no Dashboard do Supabase em Edge Functions > New

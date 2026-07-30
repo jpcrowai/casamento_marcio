@@ -1,5 +1,5 @@
 -- ================================================================
--- CASAMENTO MÁRCIO & ELISÂNGELA - Setup do Banco de Dados Supabase
+-- CASAMENTO ELISÂNGELA & MÁRCIO - Setup do Banco de Dados Supabase
 -- Execute esse SQL no "SQL Editor" do seu projeto no Supabase
 -- ================================================================
 

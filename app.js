@@ -1,5 +1,5 @@
 // ================================================================
-// Casamento Márcio & Elisângela - app.js
+// Casamento Elisângela & Márcio - app.js
 // Integrado com Supabase para persistência de dados em nuvem
 // ================================================================
 
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const rsvpPaymentStatus = document.getElementById('rsvp-payment-status');
   let rsvpPollHandle = null;
 
-  const RSVP_PRICE_PER_PERSON = 130;
+  const RSVP_PRICE_PER_PERSON = 120;
 
   function renderCompanionInputs() {
     const attendance = rsvpForm.querySelector('input[name="attendance"]:checked').value;
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 6. PIX & Gifts (contribuições reais via Checkout Mercado Pago)
   // ---------------------------------------------------------------
   const btnCopyMainPix  = document.getElementById('btn-copy-main-pix');
-  const pixKeyText = '8b1dea47-3989-425b-aae5-cd611e884b49';
+  const pixKeyText = '1fd991b6-f4a6-405d-8a20-6cce27eee23d';
 
   function copyPixKey() {
     navigator.clipboard.writeText(pixKeyText)

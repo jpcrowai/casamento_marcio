@@ -1,5 +1,5 @@
 -- ================================================================
--- CASAMENTO MÁRCIO & ELISÂNGELA - Pagamentos via PIX (PagBank)
+-- CASAMENTO ELISÂNGELA & MÁRCIO - Pagamentos via PIX (PagBank)
 -- Execute esse SQL no "SQL Editor" do Supabase DEPOIS de supabase_setup.sql
 -- ================================================================
 

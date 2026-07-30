@@ -1,5 +1,5 @@
 // ================================================================
-// Casamento Márcio & Elisângela - Edge Function: create-mp-checkout
+// Casamento Elisângela & Márcio - Edge Function: create-mp-checkout
 // Cria uma Preferência de Checkout do Mercado Pago (o convidado escolhe
 // PIX, cartão ou boleto na própria página do Mercado Pago) para RSVP
 // (kind='rsvp') ou contribuição de presente (kind='gift'). Cole este
@@ -24,7 +24,7 @@ const CORS_HEADERS = {
 };
 
 // Preço por pessoa na confirmação de presença (RSVP)
-const RSVP_PRICE_PER_PERSON_CENTS = 13000; // R$130,00
+const RSVP_PRICE_PER_PERSON_CENTS = 12000; // R$120,00
 
 // Fonte da verdade dos valores dos presentes - precisa ser mantida em
 // sincronia manualmente com os data-title/data-val de cada card em
@@ -67,7 +67,6 @@ const GIFT_PRICES_CENTS: Record<string, number> = {
   "Passeio Turístico": 40000,
   "Day Spa a Dois": 35000,
   "Seguro Viagem": 20000,
-  "Teste de Pagamento": 100, // item temporário pra validar produção - remover depois (e tirar o card do index.html)
 };
 
 function jsonResponse(body: unknown, status = 200) {
@@ -193,7 +192,7 @@ Deno.serve(async (req) => {
           customerName: name,
           customerEmail: email,
           customerTaxId: cpf,
-          itemName: "Reserva de presença - Casamento Márcio & Elisângela",
+          itemName: "Reserva de presença - Casamento Elisângela & Márcio",
         });
         await supabaseAdmin.from("rsvps").update({ pagbank_order_id: checkout.preferenceId, checkout_url: checkout.checkoutUrl }).eq("id", rsvpId);
         return jsonResponse({ id: rsvpId, kind: "rsvp", amount: amountCents / 100, checkoutUrl: checkout.checkoutUrl });

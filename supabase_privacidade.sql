@@ -1,5 +1,5 @@
 -- ================================================================
--- CASAMENTO MÁRCIO & ELISÂNGELA - Privacidade (área administrativa)
+-- CASAMENTO ELISÂNGELA & MÁRCIO - Privacidade (área administrativa)
 -- Execute esse SQL no "SQL Editor" do Supabase DEPOIS de
 -- supabase_setup.sql e supabase_pagamentos.sql
 --

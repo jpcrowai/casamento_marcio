@@ -1,5 +1,5 @@
 // ================================================================
-// Casamento Márcio & Elisângela - admin.js
+// Casamento Elisângela & Márcio - admin.js
 // Página privada (admin.html) - lista de convidados, presentes e
 // mural de recados. Protegida por senha via RPCs do Supabase.
 // ================================================================
